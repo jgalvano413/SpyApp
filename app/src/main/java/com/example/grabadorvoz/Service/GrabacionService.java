@@ -1,4 +1,4 @@
-package com.example.grabadorvoz;
+package com.example.grabadorvoz.Service;
 
 import static androidx.core.content.PackageManagerCompat.LOG_TAG;
 
@@ -9,21 +9,18 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Process;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import com.example.grabadorvoz.R;
 
 import java.io.IOException;
 

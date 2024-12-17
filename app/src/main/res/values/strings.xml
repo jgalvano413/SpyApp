@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">GrabadorVoz</string>
+    <string name="app_name">Spy App</string>
+    <string name="POWEREDBY">Powered by Luis Galvan.</string>
+    <string name="POWEREDBY2">Spy App powered by Luis Galvan.</string>
+    <string name="denied_permiss">Permisos denegados la aplicacion se cerrara en</string>
+    <string name="warningapp">Esta aplicación permite la grabación de audio y video en segundo plano. El mal uso de esta funcionalidad es responsabilidad del usuario. Al continuar, el usuario acepta que no nos hacemos responsables por el uso indebido que se le dé a esta función.</string>
+    <string name="permiss">La aplicación no puede funcionar correctamente sin todos los permisos necesarios.</string>
 </resources>

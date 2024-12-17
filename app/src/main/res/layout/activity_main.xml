@@ -1,26 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.widget.ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:id="@+id/main">
-    <Button
-        android:id="@+id/bGrabar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Grabar" />
-    <Button
-        android:id="@+id/bDetener"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Detener Grabacion" />
-    <Button
-        android:id="@+id/bReproducir"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reproducir"
-        android:onClick="reproducir" />
+    android:fillViewport="true"> <!-- Esta propiedad asegura que el contenido ocupe todo el espacio disponible -->
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:id="@+id/main">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:padding="8dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:elevation="4dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginBottom="18dp"
+                android:layout_marginTop="18dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="12dp" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp"
+                    android:background="@color/white">
+
+                    <ImageView
+                        android:id="@+id/userSettings"
+                        android:layout_width="match_parent"
+                        android:layout_height="125dp"
+                        android:padding="12dp"
+                        android:src="@drawable/img"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="RAM disponible\n2.3/5.6 GB"
+                        android:textSize="12sp"
+                        android:textColor="@color/black"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"/>
+
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:elevation="4dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginBottom="18dp"
+                android:layout_marginTop="18dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="12dp" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp"
+                    android:background="@color/white">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="125dp"
+                        android:padding="12dp"
+                        android:src="@drawable/img_2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Almacenamiento disponible\n2.3/5.6 GB"
+                        android:textSize="12sp"
+                        android:textColor="@color/black"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"/>
+
+
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:padding="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAudio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:text="Grabación de audio"
+                app:cornerRadius="25dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVideo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:text="Grabación de video"
+                app:cornerRadius="25dp"/>
+
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginLeft="95dp"
+            android:layout_marginRight="95dp"
+            android:text="Archivos"
+            app:cornerRadius="25dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/POWEREDBY2"
+            android:textSize="12sp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+</android.widget.ScrollView>
