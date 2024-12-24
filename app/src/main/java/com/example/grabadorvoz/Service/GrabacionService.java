@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -22,20 +23,21 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.grabadorvoz.R;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class GrabacionService extends Service {
 
     private MediaRecorder recorder = null;
     private String fileName = null;
-
-
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
-
     private static final String CHANNEL_ID = "id_galvan";
 
-    // Handler that receives messages from the thread
+
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
             super(looper);
@@ -43,29 +45,17 @@ public class GrabacionService extends Service {
         @Override
         public void handleMessage(Message msg) {
             startRecording();
-
-            // Stop the service using the startId, so that we don't stop
-            // the service in the middle of handling another job
-            //stopSelf(msg.arg1);
         }
     }
 
 
     @Override
     public void onCreate() {
-        // Start up the thread running the service. Note that we create a
-        // separate thread because the service normally runs in the process's
-        // main thread, which we don't want to block. We also make it
-        // background priority so CPU-intensive work doesn't disrupt our UI.
-        fileName = getExternalCacheDir().getAbsolutePath();
-        fileName += "/audiorecordtest.3gp";
-//        HandlerThread thread = new HandlerThread("ServiceStartArguments",
-//                Process.THREAD_PRIORITY_BACKGROUND);
-//        thread.start();
-
-        // Get the HandlerThread's Looper and use it for our Handler
-//        serviceLooper = thread.getLooper();
-//        serviceHandler = new ServiceHandler(serviceLooper);
+        File downloadsFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(R.string.app_name));
+        if (!downloadsFolder.exists()) {
+            downloadsFolder.mkdirs();
+        }
+        fileName = new File(downloadsFolder, "audiorecord_" + getDate() + ".mp4").getAbsolutePath();
 
     }
 
@@ -76,14 +66,6 @@ public class GrabacionService extends Service {
         createNotificationChannel();
         startForeground(1, createSilentNotification());
         startRecording();
-
-//        // For each start request, send a message to start a job and deliver the
-//        // start ID so we know which request we're stopping when we finish the job
-//        Message msg = serviceHandler.obtainMessage();
-//        msg.arg1 = startId;
-//        serviceHandler.sendMessage(msg);
-
-        // If we get killed, after returning from here, restart
         return START_STICKY;
     }
 
@@ -109,14 +91,12 @@ public class GrabacionService extends Service {
         recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         recorder.setOutputFile(fileName);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
         try {
             recorder.prepare();
+            recorder.start();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(LOG_TAG, "prepare() failed",e);
         }
-
-        recorder.start();
     }
 
     private void stopRecording() {
@@ -144,4 +124,14 @@ public class GrabacionService extends Service {
             manager.createNotificationChannel(channel);
         }
     }
+
+    private String getDate() {
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.getDefault());
+        return dateFormat.format(date);
+    }
 }
+//        fileName = getExternalCacheDir().getAbsolutePath();
+//        fileName += "/audiorecordtest.mp4";
+
+

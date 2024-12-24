@@ -1,14 +1,19 @@
 package com.example.grabadorvoz.activity;
 
+import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.KEY_MESSAGE;
 import static com.example.grabadorvoz.widgets.ShowAlertDialogcustomKt.showAlertDialogcustom;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,38 +22,29 @@ import androidx.core.app.ActivityCompat;
 import com.ade.accessControl.manager.PermissionsManager;
 import com.example.grabadorvoz.Service.GrabacionService;
 import com.example.grabadorvoz.R;
+import com.example.grabadorvoz.manager.HardwareManager;
+import com.example.grabadorvoz.manager.managerData;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String LOG_TAG = "AudioRecordTest";
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-    private boolean permissionToRecordAccepted = false;
-    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-            case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                break;
-        }
-        if (!permissionToRecordAccepted) finish();
-
-    }
+    private View mainView,audioView,camareView;
+    private managerData data;
+    private Button files,audio,record;
+    private HardwareManager hardwareManager;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        if (!new PermissionsManager(this).arePermissionsGranted()){
-            Intent intent = new Intent(this, SplashActivity.class);
-            startActivity(intent);
-            finish();
-            return;
+        if (isServiceRunning(GrabacionService.class)){
+            setAudioView();
+        } else {
+            data = new managerData(this);
+            if (!data.getBoolean(KEY_MESSAGE)) {
+                showAlert("ADVERTENCIA", getString(R.string.warningapp));
+            } else {
+                Init();
+            }
         }
-        showAlert("ADVERTENCIA",getString(R.string.warningapp));
-//        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
-//        startService(new Intent(this, GrabacionService.class));
     }
 
     @Override
@@ -82,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
                 tittle,
                 message,
                 (dialog, which) -> {
-                    setContentView(R.layout.activity_main);
+                    data.saveBoolean(KEY_MESSAGE,true);
+                    Init();
                 },
                 (dialog, which) -> {
                     finish();
@@ -91,6 +88,82 @@ public class MainActivity extends AppCompatActivity {
                 "CANCELAR"
         );
     }
+
+    private void Init(){
+        if (!new PermissionsManager(this).arePermissionsGranted()){
+            Intent intent = new Intent(this, SplashActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+        setContentView(R.layout.activity_main);
+        hardwareManager = new HardwareManager(this);
+        setMemory();
+        accionButton();
+    }
+
+    private void setMemory(){
+        TextView RamView = findViewById(R.id.ramView);
+        RamView.setText("RAM disponible"+"\n"+ hardwareManager.getMemoryAvailable()[0] + "GB /" + hardwareManager.getMemoryAvailable()[1] + "GB");
+        TextView StoregeView = findViewById(R.id.storageView);
+        StoregeView.setText("Almacenamineto disponible"+"\n"+ hardwareManager.getStorageInfo()[0] + "GB /" + hardwareManager.getStorageInfo()[1] + "GB");
+    }
+
+    private void accionButton(){
+        findViewById(R.id.btnAudio).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startService(new Intent(getApplicationContext(), GrabacionService.class));
+                setAudioView();
+                onBackPressed();
+            }
+        });
+        findViewById(R.id.btnVideo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        findViewById(R.id.btnData).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
+
+
+    private void setAudioView() {
+        setMemory();
+        setContentView(R.layout.activity_main);
+        goneVisibilit(R.id.mainLayout);
+        viewVisibility(R.id.audioLayout);
+        findViewById(R.id.btnAudioStop).setOnClickListener(view -> {
+            Intent serviceIntent = new Intent(this, GrabacionService.class);
+            stopService(serviceIntent);
+            goneVisibilit(R.id.audioLayout);
+            viewVisibility(R.id.mainLayout);
+            accionButton();
+        });
+    }
+
+
+    private void goneVisibilit(int layout){
+        findViewById(layout).setVisibility(View.GONE);
+    }
+
+    private void viewVisibility(int layout){
+        findViewById(layout).setVisibility(View.VISIBLE);
+    }
+
+
 
 }
 
