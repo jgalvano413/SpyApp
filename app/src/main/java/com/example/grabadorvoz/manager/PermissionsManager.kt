@@ -11,8 +11,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.grabadorvoz.R
 import com.example.grabadorvoz.activity.MainActivity
+import com.galvancorp.spyapp.R
 
 class PermissionsManager(private val activity: Activity) {
 
@@ -40,10 +40,21 @@ class PermissionsManager(private val activity: Activity) {
         val permissionsNeeded = REQUIRED_PERMISSIONS.filter {
             ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
         }
-        if (permissionsNeeded.isNotEmpty()) {
+
+        val bluetoothPermissionsNeeded = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            arrayOf(
+                Manifest.permission.POST_NOTIFICATIONS
+            ).filter {
+                ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
+            }
+        } else {
+            emptyList()
+        }
+
+        if (permissionsNeeded.isNotEmpty() || bluetoothPermissionsNeeded.isNotEmpty()) {
             ActivityCompat.requestPermissions(
                 activity,
-                (permissionsNeeded).toTypedArray(),
+                (permissionsNeeded + bluetoothPermissionsNeeded).toTypedArray(),
                 PERMISSION_REQUEST_CODE
             )
         }

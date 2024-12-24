@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -21,48 +22,36 @@ import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.grabadorvoz.R;
+import com.example.grabadorvoz.Service.BroadcastReceiver.StopServiceReceiver;
+import com.example.grabadorvoz.data.FileManager;
+import com.galvancorp.spyapp.R;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 
 public class GrabacionService extends Service {
 
+    private NotificationManager manager;
     private MediaRecorder recorder = null;
     private String fileName = null;
-    private Looper serviceLooper;
-    private ServiceHandler serviceHandler;
     private static final String CHANNEL_ID = "id_galvan";
-
-
-    private final class ServiceHandler extends Handler {
-        public ServiceHandler(Looper looper) {
-            super(looper);
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            startRecording();
-        }
-    }
-
 
     @Override
     public void onCreate() {
-        File downloadsFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(R.string.app_name));
-        if (!downloadsFolder.exists()) {
-            downloadsFolder.mkdirs();
+        File cacheDir = getExternalCacheDir(); // Directorio de caché externo
+        if (cacheDir != null && !cacheDir.exists()) {
+            cacheDir.mkdirs();
         }
-        fileName = new File(downloadsFolder, "audiorecord_" + getDate() + ".mp4").getAbsolutePath();
-
+        fileName = new File(cacheDir, "audiorecord_" + getDate() + ".mp4").getAbsolutePath();
     }
 
     @SuppressLint("ForegroundServiceType")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
         createNotificationChannel();
         startForeground(1, createSilentNotification());
         startRecording();
@@ -71,7 +60,6 @@ public class GrabacionService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // We don't provide binding, so return null
         return null;
     }
 
@@ -80,8 +68,7 @@ public class GrabacionService extends Service {
         super.onDestroy();
         Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
         stopRecording();
-        Intent serviceIntent = new Intent(this, GrabacionService.class);
-        stopService(serviceIntent);
+        manager.cancel(1);
     }
 
     @SuppressLint("RestrictedApi")
@@ -106,21 +93,30 @@ public class GrabacionService extends Service {
     }
 
     private Notification createSilentNotification() {
+        Intent stopIntent = new Intent(this, StopServiceReceiver.class);
+        PendingIntent stopPendingIntent = PendingIntent.getBroadcast(
+                this,
+                0,
+                stopIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_android_black_24dp)
+                .setSmallIcon(R.drawable.baseline_stop_24)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                .setSilent(true);
-        builder.setContentTitle("")
-                .setContentText("");
+                .setOngoing(true)
+                .addAction(R.drawable.baseline_stop_24, "Detener", stopPendingIntent);
+        builder.setContentTitle("Grabación en curso")
+                .setContentText("Presiona para detener la grabación");
 
         return builder.build();
     }
 
+
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Servicio de Notificador", NotificationManager.IMPORTANCE_HIGH);
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel);
         }
     }
@@ -131,7 +127,5 @@ public class GrabacionService extends Service {
         return dateFormat.format(date);
     }
 }
-//        fileName = getExternalCacheDir().getAbsolutePath();
-//        fileName += "/audiorecordtest.mp4";
 
 

@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollview"
     android:fillViewport="true"> <!-- Esta propiedad asegura que el contenido ocupe todo el espacio disponible -->
 
     <LinearLayout
@@ -177,6 +178,15 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/app_version"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"/>
+
         </LinearLayout>
 
 
@@ -220,9 +230,6 @@
                 android:text="Stop"
                 app:cornerRadius="25dp"/>
 
-
-
-
         </LinearLayout>
 
 
@@ -233,20 +240,9 @@
             android:orientation="vertical"
             android:gravity="center">
 
-
-
-
-
-
-
-
         </LinearLayout>
 
 
-
-
-
     </LinearLayout>
-
 
 </android.widget.ScrollView>

@@ -1,4 +1,4 @@
-package com.example.grabadorvoz.widgets
+package com.example.grabadorvoz.widgets.dialog
 
 import android.app.AlertDialog
 import android.content.Context
@@ -8,7 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.TextView
-import com.example.grabadorvoz.R
+import com.galvancorp.spyapp.R
 
 
 fun showAlertDialogcustom(

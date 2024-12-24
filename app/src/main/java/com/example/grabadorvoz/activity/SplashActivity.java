@@ -12,7 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.ade.accessControl.manager.PermissionsManager;
-import com.example.grabadorvoz.R;
+import com.galvancorp.spyapp.R;
 
 public class SplashActivity extends AppCompatActivity {
     private PermissionsManager permissionsManager;

@@ -1,29 +1,26 @@
 package com.example.grabadorvoz.activity;
 
 import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.KEY_MESSAGE;
-import static com.example.grabadorvoz.widgets.ShowAlertDialogcustomKt.showAlertDialogcustom;
+import static com.example.grabadorvoz.widgets.dialog.ShowAlertDialogcustomKt.showAlertDialogcustom;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import com.ade.accessControl.manager.PermissionsManager;
 import com.example.grabadorvoz.Service.GrabacionService;
-import com.example.grabadorvoz.R;
+import com.example.grabadorvoz.activity.files.ShowFilesActivity;
 import com.example.grabadorvoz.manager.HardwareManager;
 import com.example.grabadorvoz.manager.managerData;
+import com.galvancorp.spyapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,6 +41,23 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Init();
             }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            if (isServiceRunning(GrabacionService.class)) {
+                setAudioView();
+            } else {
+                setMemory();
+                goneVisibilit(R.id.audioLayout);
+                viewVisibility(R.id.mainLayout);
+                accionButton();
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity","Error",e);
         }
     }
 
@@ -114,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startService(new Intent(getApplicationContext(), GrabacionService.class));
-                setAudioView();
                 onBackPressed();
+                setAudioView();
             }
         });
         findViewById(R.id.btnVideo).setOnClickListener(new View.OnClickListener() {
@@ -127,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnData).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(MainActivity.this, ShowFilesActivity.class));
             }
         });
     }
@@ -137,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         moveTaskToBack(true);
     }
-
 
 
     private void setAudioView() {

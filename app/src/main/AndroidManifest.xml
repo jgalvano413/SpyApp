@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -20,20 +21,22 @@
         android:theme="@style/Theme.GrabadorVoz"
         tools:targetApi="31">
         <activity
-            android:name=".activity.ShowFilesActivity"
+            android:name="com.example.grabadorvoz.activity.files.ShowFilesActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".activity.SplashActivity"
+            android:name="com.example.grabadorvoz.activity.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
 
+        <receiver android:name="com.example.grabadorvoz.Service.BroadcastReceiver.StopServiceReceiver" />
+
         <service
-            android:name=".Service.GrabacionService"
+            android:name="com.example.grabadorvoz.Service.GrabacionService"
             android:foregroundServiceType="microphone" />
 
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.example.grabadorvoz.activity.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
