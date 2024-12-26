@@ -9,6 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.ade.accessControl.manager.PermissionsManager;
 import com.example.grabadorvoz.Service.GrabacionService;
+import com.example.grabadorvoz.Service.videoRecording;
 import com.example.grabadorvoz.activity.files.ShowFilesActivity;
 import com.example.grabadorvoz.manager.HardwareManager;
 import com.example.grabadorvoz.manager.managerData;
@@ -32,16 +36,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        if (isServiceRunning(GrabacionService.class)){
-            setAudioView();
+//        if (isServiceRunning(GrabacionService.class)){
+//            setAudioView();
+//        } else {
+        data = new managerData(this);
+        if (!data.getBoolean(KEY_MESSAGE)) {
+            showAlert("ADVERTENCIA", getString(R.string.warningapp));
         } else {
-            data = new managerData(this);
-            if (!data.getBoolean(KEY_MESSAGE)) {
-                showAlert("ADVERTENCIA", getString(R.string.warningapp));
-            } else {
-                Init();
-            }
+            Init();
         }
+//        }
     }
 
     @Override
@@ -50,11 +54,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             if (isServiceRunning(GrabacionService.class)) {
                 setAudioView();
+            } else if (isServiceRunning(videoRecording.class)) {
+                setVideoView();
             } else {
-                setMemory();
-                goneVisibilit(R.id.audioLayout);
-                viewVisibility(R.id.mainLayout);
-                accionButton();
+                showMainlayout();
             }
         } catch (Exception e) {
             Log.e("MainActivity","Error",e);
@@ -135,7 +138,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnVideo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startService();
+                onBackPressed();
+                setVideoView();
             }
         });
         findViewById(R.id.btnData).setOnClickListener(new View.OnClickListener() {
@@ -146,24 +151,62 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);
     }
 
+    private void startService(){
+        SurfaceView surfaceView = findViewById(R.id.surfaceView);
+        SurfaceHolder surfaceHolder = surfaceView.getHolder();
+        Surface surface = surfaceHolder.getSurface();
+        Intent serviceIntent = new Intent(getApplicationContext(), videoRecording.class);
+        serviceIntent.putExtra("surface", surface);  // Cambié el nombre de la clave a "surface"
+        startService(serviceIntent);
+    }
+
 
     private void setAudioView() {
         setMemory();
         setContentView(R.layout.activity_main);
-        goneVisibilit(R.id.mainLayout);
-        viewVisibility(R.id.audioLayout);
+        showAudiolayout();
         findViewById(R.id.btnAudioStop).setOnClickListener(view -> {
             Intent serviceIntent = new Intent(this, GrabacionService.class);
             stopService(serviceIntent);
-            goneVisibilit(R.id.audioLayout);
-            viewVisibility(R.id.mainLayout);
-            accionButton();
+            showMainlayout();
+        });
+    }
+
+    private void showAudiolayout(){
+        goneVisibilit(R.id.camaraLayout);
+        goneVisibilit(R.id.mainLayout);
+        viewVisibility(R.id.audioLayout);
+    }
+
+    private void showMainlayout(){
+        setMemory();
+        goneVisibilit(R.id.camaraLayout);
+        goneVisibilit(R.id.audioLayout);
+        viewVisibility(R.id.mainLayout);
+        accionButton();
+    }
+
+    private void showVideolayout(){
+        goneVisibilit(R.id.mainLayout);
+        goneVisibilit(R.id.audioLayout);
+        viewVisibility(R.id.camaraLayout);
+    }
+
+    private void setVideoView(){
+        setMemory();
+        setContentView(R.layout.activity_main);
+        showVideolayout();
+        findViewById(R.id.btnVideoStop).setOnClickListener(view -> {
+            Intent serviceIntent = new Intent(this, videoRecording.class);
+            stopService(serviceIntent);
+            showMainlayout();
         });
     }
 

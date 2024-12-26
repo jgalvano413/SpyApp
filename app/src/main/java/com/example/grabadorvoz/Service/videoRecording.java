@@ -1,7 +1,5 @@
 package com.example.grabadorvoz.Service;
 
-import static androidx.core.content.PackageManagerCompat.LOG_TAG;
-
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -10,20 +8,18 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
+import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
 import com.example.grabadorvoz.Service.BroadcastReceiver.StopServiceReceiver;
-import com.example.grabadorvoz.data.FileManager;
 import com.galvancorp.spyapp.R;
 
 import java.io.File;
@@ -31,12 +27,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
 
-public class GrabacionService extends Service {
+public class videoRecording extends Service {
 
     private NotificationManager manager;
+    private Camera camera;
     private MediaRecorder recorder = null;
+    private Surface surfaceHolder;
     private String fileName = null;
     private static final String CHANNEL_ID = "id_galvan";
 
@@ -46,7 +43,7 @@ public class GrabacionService extends Service {
         if (cacheDir != null && !cacheDir.exists()) {
             cacheDir.mkdirs();
         }
-        fileName = new File(cacheDir, "audiorecord_" + getDate() + ".mp3").getAbsolutePath();
+        fileName = new File(cacheDir, "videorecord_" + getDate() + ".mp4").getAbsolutePath();
     }
 
     @SuppressLint("ForegroundServiceType")
@@ -54,6 +51,9 @@ public class GrabacionService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         createNotificationChannel();
         startForeground(1, createSilentNotification());
+
+        // Obtén el SurfaceHolder de la vista en la que quieres mostrar la vista previa del video
+        surfaceHolder = (Surface) intent.getExtras().get("surface");
         startRecording();
         return START_STICKY;
     }
@@ -66,30 +66,44 @@ public class GrabacionService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Servicio finalizado", Toast.LENGTH_SHORT).show();
         stopRecording();
         manager.cancel(1);
     }
 
     @SuppressLint("RestrictedApi")
     private void startRecording() {
+        camera = Camera.open();
         recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setOutputFile(fileName);
+        camera.unlock();
+        recorder.setCamera(camera);
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC); // Fuente de audio
+        recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA); // Fuente de video
+        // Establecer formato de salida
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        //recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+        // Establecer el archivo de salida
+        recorder.setOutputFile(fileName);
+
+        // Configurar la vista previa del video
+        recorder.setPreviewDisplay(surfaceHolder);
         try {
             recorder.prepare();
             recorder.start();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed",e);
+            Log.e("GrabacionService", "prepare() failed", e);
         }
     }
 
     private void stopRecording() {
-        recorder.stop();
-        recorder.release();
-        recorder = null;
+        if (recorder != null) {
+            recorder.stop();
+            recorder.release();
+            camera.release();
+        }
     }
 
     private Notification createSilentNotification() {
@@ -101,17 +115,16 @@ public class GrabacionService extends Service {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.baseline_stop_24)
+                .setSmallIcon(R.drawable.baseline_camera_alt_24)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setOngoing(true)
-                .addAction(R.drawable.baseline_stop_24, "Detener", stopPendingIntent);
+                .addAction(R.drawable.baseline_camera_alt_24, "Detener", stopPendingIntent);
         builder.setContentTitle("Grabación en curso")
                 .setContentText("Presiona para detener la grabación");
 
         return builder.build();
     }
-
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -127,5 +140,3 @@ public class GrabacionService extends Service {
         return dateFormat.format(date);
     }
 }
-
-

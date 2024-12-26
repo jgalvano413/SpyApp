@@ -26,7 +26,7 @@ public class FileManager {
     }
 
     @SuppressLint("NewApi")
-    public void saveFileToGallery(File file) {
+    public Boolean saveFileToGallery(File file) {
         File downloadsFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), context.getString(R.string.app_name));
         if (!downloadsFolder.exists()) {
             downloadsFolder.mkdirs();
@@ -39,20 +39,26 @@ public class FileManager {
             Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             scanIntent.setData(Uri.fromFile(targetFile));
             context.sendBroadcast(scanIntent);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(context, "Error al guardar el archivo", Toast.LENGTH_SHORT).show();
         }
+        return false;
     }
 
 
     public List<File> getCachedAudioFiles() {
         File cacheDir = context.getExternalCacheDir();
         if (cacheDir != null && cacheDir.isDirectory()) {
-            return Arrays.asList(cacheDir.listFiles(file -> file.getName().endsWith(".mp4")));
+            // Listar todos los archivos sin filtro
+            File[] files = cacheDir.listFiles();
+            return files != null ? new ArrayList<>(Arrays.asList(files)) : new ArrayList<>();
         }
         return new ArrayList<>();
     }
+
+
 
 
 

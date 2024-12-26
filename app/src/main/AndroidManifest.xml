@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -34,6 +35,9 @@
         <service
             android:name="com.example.grabadorvoz.Service.GrabacionService"
             android:foregroundServiceType="microphone" />
+        <service
+            android:name="com.example.grabadorvoz.Service.videoRecording"
+            android:foregroundServiceType="camera" />
 
         <activity
             android:name="com.example.grabadorvoz.activity.MainActivity"

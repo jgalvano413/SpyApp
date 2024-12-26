@@ -14,6 +14,7 @@
             android:id="@+id/mainLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:orientation="vertical"
             android:gravity="center"
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -238,7 +239,37 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:padding="12dp"
             android:gravity="center">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/videoAnimation"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/animation_record_video" />
+
+            <SurfaceView
+                android:id="@+id/surfaceView"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:padding="15dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVideoStop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:backgroundTint="#F20606"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="85dp"
+                android:layout_marginRight="85dp"
+                android:text="Stop"
+                app:cornerRadius="25dp"/>
+
 
         </LinearLayout>
 
