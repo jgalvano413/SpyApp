@@ -1,9 +1,12 @@
 package com.example.grabadorvoz.widgets.adapter;
+import static com.example.pruebaremoto.widgets.toast.ToastKt.showToast;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.media.MediaMetadataRetriever;
 import android.os.Handler;
@@ -36,6 +39,7 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int AUDIO_FILE = 0;
     private static final int AUDIO_VIDEO_FILE = 1;
+    private static final int ERROR_FILE = -1;
     private Boolean loading = false;
     private Activity a;
     private FileManager manager;
@@ -53,10 +57,12 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         File file = files.get(position);
         if (isAudioFile(file)) {
             return AUDIO_FILE;
+        } else if (!getSizefileMB(file.length())){
+            return ERROR_FILE;
         } else if (isAudioVideoFile(file)) {
             return AUDIO_VIDEO_FILE;
         } else {
-            return -1; // Para casos desconocidos, si los hay
+            return ERROR_FILE;
         }
     }
 
@@ -77,14 +83,18 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        File file = files.get(position);
-        String date = getFormatdate(file.getName());
-        if (holder instanceof AudioFileViewHolder) {
-            ((AudioFileViewHolder) holder).bind(file,position,date,manager,this);
-        } else if (holder instanceof AudioVideoFileViewHolder) {
-            ((AudioVideoFileViewHolder) holder).bind(file,position,date,manager,this);
+        if (position == 0 && !loading) loadSuccesfull();
+        else {
+            File file = files.get(position);
+            String date = getFormatdate(file.getName());
+            if (holder instanceof AudioFileViewHolder) {
+                ((AudioFileViewHolder) holder).bind(file, position, date, manager, this);
+            } else if (holder instanceof AudioVideoFileViewHolder) {
+                ((AudioVideoFileViewHolder) holder).bind(file, position, date, manager, this);
+            } else {
+                ((DefaultViewHolder) holder).bind(file, position, date, this);
+            }
         }
-        if (position >= files.size() - 1 && !loading) loadSuccesfull();
         holder.itemView.setTranslationY(3000);
         holder.itemView.animate().translationY(0).setDuration(500).start();
     }
@@ -104,6 +114,10 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return fileName.endsWith(".mp4") || fileName.endsWith(".avi") || fileName.endsWith(".mkv"); // Añadir más extensiones si es necesario
     }
 
+    private Boolean getSizefileMB(long size){
+        return (size / 1024.0) / 1024.0 >= 2;
+    }
+
     private void loadSuccesfull(){
         loading = true;
         new Thread(new Runnable() {
@@ -117,7 +131,7 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             a.findViewById(R.id.main_layout).setVisibility(View.GONE);
                         }
                     });
-                    Thread.sleep(2500);
+                    Thread.sleep(2000);
                     a.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -170,6 +184,7 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
         }
 
+
         private void playAudio(File file) {
             try {
                 if (mediaPlayer != null) {
@@ -185,7 +200,6 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 });
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(itemView.getContext(), "Error al reproducir el archivo", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -232,8 +246,10 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         listenButton.setText("Ver");
                         videoView.setVisibility(View.GONE);
                         videoView.stopPlayback();  // Detener el video si está en reproducción
+                    } else if (!adapter.getSizefileMB(file.length())){
+                        showToast(adapter.a.getApplicationContext(),"Archino dañado",false);
                     } else {
-                        // Reproducir video
+                        //Reproducir video
                         listenButton.setText("Detener");
                         Uri videoUri = Uri.fromFile(file);
                         videoView.setVisibility(View.VISIBLE);
@@ -257,19 +273,19 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // ViewHolder para otros tipos de archivos (por ejemplo, desconocidos)
     public static class DefaultViewHolder extends RecyclerView.ViewHolder {
-        TextView fileName,date;
+        TextView fileName,dateView;
         Button delete;
 
         public DefaultViewHolder(View itemView) {
             super(itemView);
             fileName = itemView.findViewById(R.id.nameFileview);
-            date = itemView.findViewById(R.id.dateFileview);
+            dateView = itemView.findViewById(R.id.dateFileview);
             delete = itemView.findViewById(R.id.btn_delete);
         }
 
         public void bind(File file,int position,String date,FileAdapter adapter){
             fileName.setText(file.getName());
-            fileName.setText(date);
+            dateView.setText(date);
             delete.setOnClickListener( click -> {
                 file.delete();
                 adapter.files.remove(position);

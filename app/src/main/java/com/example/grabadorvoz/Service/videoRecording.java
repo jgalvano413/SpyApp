@@ -1,5 +1,7 @@
 package com.example.grabadorvoz.Service;
 
+import static com.example.pruebaremoto.widgets.toast.ToastKt.showToast;
+
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,6 +19,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
 
+import androidx.camera.video.Recorder;
 import androidx.core.app.NotificationCompat;
 
 import com.example.grabadorvoz.Service.BroadcastReceiver.StopServiceReceiver;
@@ -44,6 +47,7 @@ public class videoRecording extends Service {
             cacheDir.mkdirs();
         }
         fileName = new File(cacheDir, "videorecord_" + getDate() + ".mp4").getAbsolutePath();
+        showToast(this, this.getString(R.string.serviceStart),true);
     }
 
     @SuppressLint("ForegroundServiceType")
@@ -66,7 +70,7 @@ public class videoRecording extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(this, "Servicio finalizado", Toast.LENGTH_SHORT).show();
+        showToast(this, this.getString(R.string.serviceStop),true);
         stopRecording();
         manager.cancel(1);
     }
@@ -99,10 +103,15 @@ public class videoRecording extends Service {
     }
 
     private void stopRecording() {
-        if (recorder != null) {
-            recorder.stop();
-            recorder.release();
-            camera.release();
+        try {
+            if (recorder != null) {
+                recorder.stop();
+                recorder.release();
+                camera.release();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("VideoRecording","errorStop",e);
         }
     }
 

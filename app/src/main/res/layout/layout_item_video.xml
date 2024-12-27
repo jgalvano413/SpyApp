@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="15dp"
-    android:layout_marginBottom="15dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:padding="4dp"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -11,8 +12,11 @@
         android:id="@+id/cardView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginLeft="6dp"
         app:cardCornerRadius="45dp"
-        app:cardElevation="4dp">
+        app:cardElevation="6dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,10 +32,9 @@
                 android:layout_width="55dp"
                 android:layout_height="55dp"
                 android:layout_marginEnd="12dp"
-                android:src="@drawable/baseline_camera_alt_24"
-                app:civ_border_color="#FF000000"
-                app:civ_border_width="2dp"
-                android:layout_weight="0" />
+                android:src="@drawable/baseline_camera_alt_24" />
+<!--                app:civ_border_color="#FF000000"-->
+
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -47,6 +50,7 @@
                     android:text="meta data"
                     android:textColor="@color/black"
                     android:textSize="14sp"
+                    android:singleLine="true"
                     android:layout_gravity="center"
                     android:ellipsize="end" />
 
@@ -73,7 +77,7 @@
                         android:layout_weight="1"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
-                        android:backgroundTint="@color/material_dynamic_primary0"
+                        android:backgroundTint="@color/black"
                         android:text="Ver"
                         android:textSize="10sp"
                         android:textColor="#FFFFFF"
@@ -88,7 +92,7 @@
                         android:layout_marginRight="8dp"
                         android:text="Guardar"
                         android:textSize="10sp"
-                        android:backgroundTint="@color/material_dynamic_primary0"
+                        android:backgroundTint="@color/black"
                         android:textColor="#FFFFFF"
                         app:cornerRadius="45dp"/>
 

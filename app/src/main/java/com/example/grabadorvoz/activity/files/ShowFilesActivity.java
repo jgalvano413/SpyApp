@@ -18,7 +18,7 @@ public class ShowFilesActivity extends AppCompatActivity {
     }
 
     private void Init(){
-        new setRecyclerViewInitializer(this).setRecyclerView();
+       new setRecyclerViewInitializer(this).setRecyclerView();
     }
 
     @Override

@@ -115,8 +115,7 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
         hardwareManager = new HardwareManager(this);
-        setMemory();
-        accionButton();
+        showMainlayout();
     }
 
     private void setMemory(){
@@ -169,8 +168,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setAudioView() {
-        setMemory();
-        setContentView(R.layout.activity_main);
         showAudiolayout();
         findViewById(R.id.btnAudioStop).setOnClickListener(view -> {
             Intent serviceIntent = new Intent(this, GrabacionService.class);

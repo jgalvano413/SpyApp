@@ -2,6 +2,8 @@ package com.example.grabadorvoz.Service;
 
 import static androidx.core.content.PackageManagerCompat.LOG_TAG;
 
+import static com.example.pruebaremoto.widgets.toast.ToastKt.showToast;
+
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -47,6 +49,7 @@ public class GrabacionService extends Service {
             cacheDir.mkdirs();
         }
         fileName = new File(cacheDir, "audiorecord_" + getDate() + ".mp3").getAbsolutePath();
+        showToast(this, this.getString(R.string.serviceStart),true);
     }
 
     @SuppressLint("ForegroundServiceType")
@@ -66,7 +69,7 @@ public class GrabacionService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+        showToast(this, this.getString(R.string.serviceStop),true);
         stopRecording();
         manager.cancel(1);
     }

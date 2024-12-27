@@ -60,8 +60,7 @@
         <ProgressBar
             android:layout_width="match_parent"
             android:layout_height="95dp"
-            style="?android:attr/progressBarStyle"
-            android:progressTint="#929292"/>
+            style="?android:attr/progressBarStyle" />
 
         <TextView
             android:layout_width="match_parent"

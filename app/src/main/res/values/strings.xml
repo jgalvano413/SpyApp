@@ -13,4 +13,10 @@
 
     <!-- filesActivity -->
     <string name="loading">Espere un momento...</string>
+    <string name="errorFile">"Este archivo está DAÑADO o es DESCONOCIDO.</string>
+
+
+    <!-- services -->
+    <string name="serviceStop">Grabacion detenida</string>
+    <string name="serviceStart">Grabacion Iniciada</string>
 </resources>

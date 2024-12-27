@@ -2,16 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="15dp"
-    android:layout_marginBottom="15dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:padding="4dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginLeft="6dp"
         app:cardCornerRadius="45dp"
-        app:cardElevation="4dp">
+        app:cardElevation="6dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -19,18 +23,13 @@
             android:orientation="horizontal"
             android:background="@color/white"
             android:padding="12dp"
-            android:gravity="center"
-            android:weightSum="1">
+            android:gravity="center">
 
             <ImageView
-                android:id="@+id/profile_image"
                 android:layout_width="55dp"
                 android:layout_height="55dp"
                 android:layout_marginEnd="12dp"
-                android:src="@drawable/baseline_volume_up_24"
-                app:civ_border_color="#FF000000"
-                app:civ_border_width="2dp"
-                android:layout_weight="0" />
+                android:src="@drawable/baseline_volume_up_24" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -46,6 +45,7 @@
                     android:text="meta data"
                     android:textColor="@color/black"
                     android:textSize="14sp"
+                    android:singleLine="true"
                     android:layout_gravity="center"
                     android:ellipsize="end" />
 
@@ -56,6 +56,7 @@
                     android:text="12/12/24, 12:08:76 PM"
                     android:textColor="@color/black"
                     android:textSize="14sp"
+                    android:singleLine="true"
                     android:layout_gravity="center"
                     android:ellipsize="end" />
 
@@ -72,11 +73,11 @@
                         android:layout_weight="1"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
-                        android:backgroundTint="@color/material_dynamic_primary0"
+                        android:backgroundTint="@color/black"
                         android:text="Escuchar"
                         android:textSize="10sp"
                         android:textColor="#FFFFFF"
-                        app:cornerRadius="45dp" />
+                        app:cornerRadius="45dp"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_save"
@@ -87,15 +88,11 @@
                         android:layout_marginRight="8dp"
                         android:text="Guardar"
                         android:textSize="10sp"
-                        android:backgroundTint="@color/material_dynamic_primary0"
+                        android:backgroundTint="@color/black"
                         android:textColor="#FFFFFF"
                         app:cornerRadius="45dp"/>
 
-
-
                 </LinearLayout>
-
-
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
