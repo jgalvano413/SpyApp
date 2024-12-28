@@ -1,7 +1,9 @@
 package com.example.grabadorvoz.activity;
 
+import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.IS_SERVICE;
 import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.KEY_MESSAGE;
 import static com.example.grabadorvoz.widgets.dialog.ShowAlertDialogcustomKt.showAlertDialogcustom;
+import static com.example.pruebaremoto.widgets.toast.ToastKt.showToast;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -22,6 +24,7 @@ import com.ade.accessControl.manager.PermissionsManager;
 import com.example.grabadorvoz.Service.GrabacionService;
 import com.example.grabadorvoz.Service.videoRecording;
 import com.example.grabadorvoz.activity.files.ShowFilesActivity;
+import com.example.grabadorvoz.data.FileManager;
 import com.example.grabadorvoz.manager.HardwareManager;
 import com.example.grabadorvoz.manager.managerData;
 import com.galvancorp.spyapp.R;
@@ -36,16 +39,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-//        if (isServiceRunning(GrabacionService.class)){
-//            setAudioView();
-//        } else {
         data = new managerData(this);
         if (!data.getBoolean(KEY_MESSAGE)) {
             showAlert("ADVERTENCIA", getString(R.string.warningapp));
         } else {
             Init();
         }
-//        }
     }
 
     @Override
@@ -72,10 +71,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(isServiceRunning(GrabacionService.class)){
-            Intent serviceIntent = new Intent(this, GrabacionService.class);
-            Log.e("Servicio","Detenido");
-            stopService(serviceIntent);
+        if(new managerData(this).getBoolean(IS_SERVICE)){
+            stopService(new Intent(this, GrabacionService.class));
+            stopService(new Intent(this, videoRecording.class));
         }
     }
 
@@ -145,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnData).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, ShowFilesActivity.class));
+                if (new FileManager(getApplicationContext()).getCachedAudioFiles().isEmpty()) showToast(getApplicationContext(), getString(R.string.emptylist), true);
+                else startActivity(new Intent(MainActivity.this, ShowFilesActivity.class));
             }
         });
     }

@@ -2,6 +2,8 @@ package com.example.grabadorvoz.Service;
 
 import static androidx.core.content.PackageManagerCompat.LOG_TAG;
 
+import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.IS_SERVICE;
+import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.WIDGET_TYPE;
 import static com.example.pruebaremoto.widgets.toast.ToastKt.showToast;
 
 import android.annotation.SuppressLint;
@@ -26,6 +28,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.grabadorvoz.Service.BroadcastReceiver.StopServiceReceiver;
 import com.example.grabadorvoz.data.FileManager;
+import com.example.grabadorvoz.manager.managerData;
 import com.galvancorp.spyapp.R;
 
 import java.io.File;
@@ -37,6 +40,7 @@ import java.util.Random;
 
 public class GrabacionService extends Service {
 
+    private managerData data;
     private NotificationManager manager;
     private MediaRecorder recorder = null;
     private String fileName = null;
@@ -44,12 +48,14 @@ public class GrabacionService extends Service {
 
     @Override
     public void onCreate() {
+        data = new managerData(this);
         File cacheDir = getExternalCacheDir(); // Directorio de caché externo
         if (cacheDir != null && !cacheDir.exists()) {
             cacheDir.mkdirs();
         }
         fileName = new File(cacheDir, "audiorecord_" + getDate() + ".mp3").getAbsolutePath();
         showToast(this, this.getString(R.string.serviceStart),true);
+        data.saveBoolean(IS_SERVICE,true);
     }
 
     @SuppressLint("ForegroundServiceType")
@@ -72,6 +78,7 @@ public class GrabacionService extends Service {
         showToast(this, this.getString(R.string.serviceStop),true);
         stopRecording();
         manager.cancel(1);
+        data.saveBoolean(IS_SERVICE,false);
     }
 
     @SuppressLint("RestrictedApi")
