@@ -39,6 +39,7 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int AUDIO_FILE = 0;
     private static final int AUDIO_VIDEO_FILE = 1;
+    private static final int IMAGE_FILE = 2;
     private static final int ERROR_FILE = -1;
     private Boolean loading = false;
     private Activity a;
@@ -73,6 +74,9 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item_audio, parent, false);
             return new AudioFileViewHolder(view);
         } else if (viewType == AUDIO_VIDEO_FILE) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item_video, parent, false);
+            return new AudioVideoFileViewHolder(view);
+        } else if (viewType == IMAGE_FILE) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item_video, parent, false);
             return new AudioVideoFileViewHolder(view);
         } else {
@@ -112,6 +116,11 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private boolean isAudioVideoFile(File file) {
         String fileName = file.getName().toLowerCase();
         return fileName.endsWith(".mp4") || fileName.endsWith(".avi") || fileName.endsWith(".mkv"); // Añadir más extensiones si es necesario
+    }
+
+    private boolean isImageFile(File file) {
+        String fileName = file.getName().toLowerCase();
+        return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png"); // Añadir más extensiones si es necesario
     }
 
     private Boolean getSizefileMB(long size){

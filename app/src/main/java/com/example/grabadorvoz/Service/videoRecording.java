@@ -21,7 +21,6 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
 
-import androidx.camera.video.Recorder;
 import androidx.core.app.NotificationCompat;
 
 import com.example.grabadorvoz.Service.BroadcastReceiver.StopServiceReceiver;

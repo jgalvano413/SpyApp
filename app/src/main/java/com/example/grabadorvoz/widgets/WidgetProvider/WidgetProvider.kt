@@ -8,6 +8,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.Toast
 import com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.IS_SERVICE
@@ -82,11 +83,11 @@ class WidgetProvider : AppWidgetProvider() {
         when {
             !isServiceRunning && !isServiceEnabled -> {
                 context.startService(Intent(context, serviceClass))
-                chengeLayout(context, serviceClass,true)
+                changeLayout(context, serviceClass,true)
             }
             isServiceRunning && isServiceEnabled -> {
                 context.stopService(Intent(context, serviceClass))
-                chengeLayout(context, serviceClass,false)
+                changeLayout(context, serviceClass,false)
             }
             else -> {
                 showToast(context, context.getString(R.string.serviceRuning), false)
@@ -98,27 +99,20 @@ class WidgetProvider : AppWidgetProvider() {
         val appWidgetManager = AppWidgetManager.getInstance(context)
         val views = RemoteViews(context.packageName, R.layout.layout_widget_homescreen)
 
-        // Log para depuración
-        Log.w("Service selected start", serviceClass.name)
-
         when (serviceClass.name) {
             GrabacionService::class.java.name -> {
                 if (type) {
-                    views.setTextViewText(R.id.audioWidgetText, context.getString(R.string.service_active))
-                    views.setImageViewResource(R.id.audioWidget, R.drawable.ic_audio_active)
+                    setAudiolayout(views, context)
                 } else {
-                    views.setTextViewText(R.id.audioWidgetText, context.getString(R.string.service_inactive))
-                    views.setImageViewResource(R.id.audioWidget, R.drawable.ic_audio_inactive)
+                    setLayout(views, context)
                 }
             }
 
             videoRecording::class.java.name -> {
                 if (type) {
-                    views.setTextViewText(R.id.videoWidgetText, context.getString(R.string.service_active))
-                    views.setImageViewResource(R.id.videoWidget, R.drawable.ic_video_active)
+                    setVideolayout(views, context)
                 } else {
-                    views.setTextViewText(R.id.videoWidgetText, context.getString(R.string.service_inactive))
-                    views.setImageViewResource(R.id.videoWidget, R.drawable.ic_video_inactive)
+                    setLayout(views, context)
                 }
             }
 
@@ -130,7 +124,39 @@ class WidgetProvider : AppWidgetProvider() {
         appWidgetManager.updateAppWidget(appWidgetIds, views)
     }
 
+    private fun setAudiolayout(views: RemoteViews,context: Context){
+        views.setViewVisibility(R.id.camaraWidget, View.GONE)
+        views.setViewVisibility(R.id.videoWidget, View.GONE)
+        views.setViewVisibility(R.id.lineOne, View.GONE)
+        views.setViewVisibility(R.id.lineTow, View.GONE)
+        views.setViewVisibility(R.id.audioWidget, View.VISIBLE)
+        views.setImageViewResource(R.id.audioImage,R.drawable.baseline_stop_24)
+        views.setTextViewText(R.id.audioView,context.getString(R.string.stopWidget))
+    }
 
+    private fun setVideolayout(views: RemoteViews,context: Context){
+        views.setViewVisibility(R.id.lineOne, View.GONE)
+        views.setViewVisibility(R.id.lineTow, View.GONE)
+        views.setViewVisibility(R.id.camaraWidget, View.GONE)
+        views.setViewVisibility(R.id.audioWidget, View.GONE)
+        views.setViewVisibility(R.id.videoWidget, View.VISIBLE)
+        views.setImageViewResource(R.id.videoView,R.drawable.baseline_stop_24)
+        views.setTextViewText(R.id.videoTest,context.getString(R.string.stopWidget))
+    }
+
+    private fun setLayout(views: RemoteViews,context: Context){
+        views.setViewVisibility(R.id.camaraWidget, View.VISIBLE)
+        views.setViewVisibility(R.id.videoWidget, View.VISIBLE)
+        views.setViewVisibility(R.id.audioWidget, View.VISIBLE)
+        views.setViewVisibility(R.id.lineOne, View.VISIBLE)
+        views.setViewVisibility(R.id.lineTow, View.VISIBLE)
+        views.setImageViewResource(R.id.audioImage,R.drawable.baseline_volume_up_24_white)
+        views.setTextViewText(R.id.audioView,context.getString(R.string.audio))
+        views.setImageViewResource(R.id.camaraview,R.drawable.baseline_camera_alt_24_white)
+        views.setTextViewText(R.id.camaratext,context.getString(R.string.camara))
+        views.setImageViewResource(R.id.videoView,R.drawable.baseline_videocam_24)
+        views.setTextViewText(R.id.videoTest,context.getString(R.string.video))
+    }
 
     private fun isRunningService(serviceClass: Class<*>, context: Context): Boolean {
         val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager

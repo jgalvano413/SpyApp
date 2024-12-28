@@ -27,4 +27,7 @@
     <string name="audio">Audio</string>
     <string name="widgetNULL">Widget es Nulo</string>
     <string name="serviceRuning">Aplicacion en ejecucion</string>
+    <string name="stopWidget">Stop</string>
+
+
 </resources>
