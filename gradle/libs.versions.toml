@@ -10,6 +10,7 @@ constraintlayout = "2.1.4"
 kotlin = "1.9.23"
 coreKtx = "1.12.0"
 cameraVideo = "1.4.1"
+kotlinGradlePlugin = "1.9.23"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -21,6 +22,7 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 camera-video = { group = "androidx.camera", name = "camera-video", version.ref = "cameraVideo" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

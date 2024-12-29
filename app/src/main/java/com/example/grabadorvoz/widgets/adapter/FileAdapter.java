@@ -140,7 +140,7 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             a.findViewById(R.id.main_layout).setVisibility(View.GONE);
                         }
                     });
-                    Thread.sleep(2000);
+                    Thread.sleep(500);
                     a.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -154,6 +154,7 @@ public class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }).start();
     }
+
 
     // ViewHolder para archivo de audio
     public static class AudioFileViewHolder extends RecyclerView.ViewHolder {

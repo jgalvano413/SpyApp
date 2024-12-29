@@ -1,6 +1,7 @@
 package com.example.grabadorvoz.Service;
 
 import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.IS_SERVICE;
+import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.NOTIFICATION;
 import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.WIDGET_TYPE;
 import static com.example.pruebaremoto.widgets.toast.ToastKt.showToast;
 
@@ -59,8 +60,8 @@ public class videoRecording extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         createNotificationChannel();
-        startForeground(1, createSilentNotification());
-
+        if (data.getBooleanNotidication(NOTIFICATION)) startForeground(1, createSilentNotification());
+        else { startForeground(1, createSilentNotification2());}
         // Obtén el SurfaceHolder de la vista en la que quieres mostrar la vista previa del video
         surfaceHolder = (Surface) intent.getExtras().get("surface");
         startRecording();
@@ -137,6 +138,18 @@ public class videoRecording extends Service {
                 .addAction(R.drawable.baseline_camera_alt_24, "Detener", stopPendingIntent);
         builder.setContentTitle("Grabación en curso")
                 .setContentText("Presiona para detener la grabación");
+
+        return builder.build();
+    }
+
+    private Notification createSilentNotification2() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setSilent(true);
+            builder.setContentTitle("")
+                    .setSmallIcon(R.drawable.logo_app)
+                    .setContentText("");
 
         return builder.build();
     }

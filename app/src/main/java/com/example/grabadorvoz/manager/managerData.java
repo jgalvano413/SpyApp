@@ -59,6 +59,10 @@ public class managerData {
     public boolean getBoolean(String key) {
         return sharedPreferences.getBoolean(key, false);
     }
+    public boolean getBooleanNotidication(String key) {
+        return sharedPreferences.getBoolean(key, true);
+    }
+
 
     public float getFloat(String key) {
         return sharedPreferences.getFloat(key, 0.0f);

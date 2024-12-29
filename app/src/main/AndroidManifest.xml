@@ -23,9 +23,12 @@
         android:theme="@style/Theme.GrabadorVoz"
         tools:targetApi="31">
         <activity
+            android:name="com.example.grabadorvoz.activity.SettingsActivity"
+            android:exported="false" />
+        <activity
             android:name="com.example.grabadorvoz.activity.files.ShowFilesActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.example.grabadorvoz.activity.SplashActivity"
             android:exported="true"

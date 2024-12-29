@@ -3,6 +3,7 @@ package com.example.grabadorvoz.Service;
 import static androidx.core.content.PackageManagerCompat.LOG_TAG;
 
 import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.IS_SERVICE;
+import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.NOTIFICATION;
 import static com.example.grabadorvoz.GlobalConfigurations.GlobalConfiguration.WIDGET_TYPE;
 import static com.example.pruebaremoto.widgets.toast.ToastKt.showToast;
 
@@ -62,9 +63,22 @@ public class GrabacionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         createNotificationChannel();
-        startForeground(1, createSilentNotification());
+        if (data.getBooleanNotidication(NOTIFICATION)) startForeground(1, createSilentNotification());
+        else { startForeground(1, createSilentNotification2());}
         startRecording();
         return START_STICKY;
+    }
+
+    private Notification createSilentNotification2() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setSilent(true);
+        builder.setContentTitle("")
+                .setSmallIcon(R.drawable.logo_app)
+                .setContentText("");
+
+        return builder.build();
     }
 
     @Override

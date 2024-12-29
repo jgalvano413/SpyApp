@@ -147,6 +147,12 @@ public class MainActivity extends AppCompatActivity {
                 else startActivity(new Intent(MainActivity.this, ShowFilesActivity.class));
             }
         });
+        findViewById(R.id.settingsView).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            }
+        });
     }
 
 

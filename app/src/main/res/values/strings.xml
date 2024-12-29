@@ -12,9 +12,14 @@
     <!-- mainActivity -->
     <string name="emptylist">Sin archivos para mostrar</string>
 
+    <!-- settingsActivity -->
+    <string name="Notify">Mostrar notificaciones cuando la aplicación esté en segundo plano.</string>
+    <string name="tittleSettings">CONFIGURACION</string>
+
     <!-- filesActivity -->
     <string name="loading">Espere un momento...</string>
-    <string name="errorFile">"Este archivo está DAÑADO o es DESCONOCIDO.</string>
+    <string name="errorFile">Este archivo está DAÑADO o es DESCONOCIDO.</string>
+    <string name="tittleFile">ARCHIVOS GUARDADOS</string>
 
 
     <!-- services -->
