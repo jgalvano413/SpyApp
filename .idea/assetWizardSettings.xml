@@ -67,7 +67,9 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
+                                                <entry key="color" value="000000" />
                                                 <entry key="imagePath" value="C:\Users\jogalvan\AppData\Local\Temp\ic_android_black_24dp.xml" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -79,8 +81,8 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="C:\Users\jogalvan\Downloads\logo_app.png" />
-                                                <entry key="scalingPercent" value="87" />
+                                                <entry key="imagePath" value="C:\Users\jogalvan\Documents\GitHub\GrabadorVoz\app\src\main\res\drawable\ic_launcher_foreground.png" />
+                                                <entry key="scalingPercent" value="140" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -114,7 +116,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="backgroundColor" value="000000" />
+                                      <entry key="backgroundColor" value="bac3c4" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -308,7 +310,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:$USER_HOME$/Library/Android/sdk/icons/material/materialicons/settings/baseline_settings_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/arrow_right_alt/baseline_arrow_right_alt_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -319,8 +321,8 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="929292" />
-                            <entry key="outputName" value="baseline_settings_24" />
-                            <entry key="sourceFile" value="/C:\Users\jcmartindelcampo\AndroidStudioProjects\GrabadorVoz" />
+                            <entry key="outputName" value="baseline_arrow_right_alt_24" />
+                            <entry key="sourceFile" value="C:\Users\jcmartindelcampo\AndroidStudioProjects\GrabadorVoz" />
                           </map>
                         </option>
                       </PersistentState>

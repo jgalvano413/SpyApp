@@ -10,8 +10,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
@@ -26,6 +28,7 @@ import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
@@ -51,13 +54,15 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
-public class photoService extends Service {
+public class photoService extends Service{
 
+    private BroadcastReceiver volumeButtonReceiver;
     private Boolean widgetPress = false;
     private managerData data;
     private NotificationManager manager;
     private CameraManager cameraManager;
     private String cameraId;
+    private CameraDevice cameraDevice;
     private File fileName = null;
     private static final String CHANNEL_ID = "id_galvan";
 
@@ -65,7 +70,6 @@ public class photoService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        getidCamara();
         if (data.getBooleanNotidication(NOTIFICATION)) {
             createNotificationChannel();
             startForeground(1, createSilentNotification());
@@ -79,17 +83,22 @@ public class photoService extends Service {
     public void onCreate() {
         super.onCreate();
         data = new managerData(this);
+        getidCamara();
         File cacheDir = getExternalCacheDir();
         if (cacheDir != null && !cacheDir.exists()) {
             cacheDir.mkdirs();
         }
         fileName = new File(cacheDir, "IMG_" + getDate() + ".jpeg");
         data.saveBoolean(IS_SERVICE,true);
+        //data.saveBoolean(TAKE_PHOTO,true);
         if (data.getBoolean(TAKE_PHOTO)) {
             widgetPress = true;
             takePhoto();
+            Log.w("CameraService", "widget");
         } else {
+            registerVolumeButtonReceiver();
             setupMediaSession();
+            Log.w("CameraService", "Activado");
         }
     }
 
@@ -103,10 +112,13 @@ public class photoService extends Service {
                     Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                     if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
                         cameraId = id;
+                        Log.w("CameraService", "idCamara: " + cameraId);
+                        openCamera();
                         break;
                     }
                 }
             } catch (CameraAccessException e) {
+                Log.e("CameraService", "camaraid",e);
                 e.printStackTrace();
             }
         }
@@ -136,6 +148,7 @@ public class photoService extends Service {
                     if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP ||
                             keyEvent.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN) {
                         takePhoto();
+                        Log.w("ServicePhoto","EventoResgistrado");
                         stopSelf();
                         return true;
                     }
@@ -143,45 +156,63 @@ public class photoService extends Service {
                 return super.onMediaButtonEvent(mediaButtonEvent);
             }
         });
+        mediaSession.setMediaButtonReceiver(null);
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setActive(true);
     }
 
     @SuppressLint("MissingPermission")
-    private void takePhoto() {
+    private void openCamera() {
         try {
             if (cameraId != null) {
                 cameraManager.openCamera(cameraId, new CameraDevice.StateCallback() {
 
                     @Override
                     public void onOpened(@NonNull CameraDevice camera) {
+                        cameraDevice = camera;
+                        Log.w("CameraActivity", "Cámara abierta correctamente");
+                    }
+
+                    @Override
+                    public void onDisconnected(@NonNull CameraDevice camera) {
+                        Log.e("CameraActivity", "Cámara desconectada");
+                        cameraDevice.close();
+                    }
+
+                    @Override
+                    public void onError(@NonNull CameraDevice camera, int error) {
+                        Log.e("CameraActivity", "Error al abrir la cámara: " + error);
+                    }
+                }, null);
+            }
+        } catch (Exception e) {
+            Log.e("CameraActivity", "Error al abrir la cámara", e);
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void takePhoto() {
+        if (cameraId != null && cameraDevice != null) {
+            try {
+                ImageReader imageReader = ImageReader.newInstance(
+                        1920, 1080, ImageFormat.JPEG, 1);
+
+                cameraDevice.createCaptureSession(Arrays.asList(imageReader.getSurface()), new CameraCaptureSession.StateCallback() {
+                    @Override
+                    public void onConfigured(@NonNull CameraCaptureSession session) {
                         try {
-                            ImageReader imageReader = ImageReader.newInstance(
-                                    1920, 1080, ImageFormat.JPEG, 1);
+                            CaptureRequest.Builder captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+                            captureRequestBuilder.addTarget(imageReader.getSurface());
+                            CaptureRequest captureRequest = captureRequestBuilder.build();
 
-                            camera.createCaptureSession(Arrays.asList(imageReader.getSurface()), new CameraCaptureSession.StateCallback() {
+                            session.capture(captureRequest, new CameraCaptureSession.CaptureCallback() {
                                 @Override
-                                public void onConfigured(@NonNull CameraCaptureSession session) {
-                                    try {
-                                        CaptureRequest.Builder captureRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-                                        captureRequestBuilder.addTarget(imageReader.getSurface());
-                                        CaptureRequest captureRequest = captureRequestBuilder.build();
-
-                                        session.capture(captureRequest, new CameraCaptureSession.CaptureCallback() {
-                                            @Override
-                                            public void onCaptureCompleted(@NonNull CameraDevice camera, @NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
-                                                super.onCaptureCompleted(camera, session, request, result);
-                                                Log.d("CameraService", "Foto tomada");
-                                                saveImage(imageReader);
-                                            }
-                                        }, null);
-                                    } catch (CameraAccessException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                @Override
-                                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-                                    Log.e("CameraService", "Configuración fallida para la sesión de captura");
+                                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                                    super.onCaptureCompleted(session, request, result);
+                                    Log.d("CameraService", "Foto tomada");
+                                    data.saveBoolean(TAKE_PHOTO,false);
+                                    saveImage(imageReader);
                                 }
                             }, null);
                         } catch (CameraAccessException e) {
@@ -190,20 +221,20 @@ public class photoService extends Service {
                     }
 
                     @Override
-                    public void onDisconnected(@NonNull CameraDevice camera) {
-                        camera.close();
-                    }
-
-                    @Override
-                    public void onError(@NonNull CameraDevice camera, int error) {
-                        Log.e("CameraService", "Error al abrir la cámara");
+                    public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+                        Log.e("CameraService", "Configuración fallida para la sesión de captura");
                     }
                 }, null);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
             }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
+        } else {
+            data.saveBoolean(TAKE_PHOTO,false);
+            Log.e("CameraService", "camaraid null");
         }
     }
+
+
 
     private void saveImage(ImageReader imageReader){
         try {
@@ -257,11 +288,9 @@ public class photoService extends Service {
 
     private Notification createSilentNotification2() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setSilent(true);
-        builder.setContentTitle("")
-                .setContentText("");
 
         return builder.build();
     }
@@ -291,5 +320,26 @@ public class photoService extends Service {
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.getDefault());
         return dateFormat.format(date);
+    }
+
+    private void registerVolumeButtonReceiver() {
+        volumeButtonReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.w("CameraService", "Evento recibido");
+                if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
+                    KeyEvent keyEvent = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                    if (keyEvent != null) {
+                        if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN) {
+                            takePhoto();
+                            Log.w("CameraService", "Botón presionado");
+                        }
+                    }
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
+        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+        registerReceiver(volumeButtonReceiver, filter,RECEIVER_NOT_EXPORTED);
     }
 }
