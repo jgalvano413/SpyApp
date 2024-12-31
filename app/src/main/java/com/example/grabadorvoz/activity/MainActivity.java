@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.ade.accessControl.manager.PermissionsManager;
 import com.example.grabadorvoz.Service.GrabacionService;
+import com.example.grabadorvoz.Service.photoService;
 import com.example.grabadorvoz.Service.videoRecording;
 import com.example.grabadorvoz.activity.files.ShowFilesActivity;
 import com.example.grabadorvoz.data.FileManager;
@@ -31,9 +32,7 @@ import com.galvancorp.spyapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    private View mainView,audioView,camareView;
     private managerData data;
-    private Button files,audio,record;
     private HardwareManager hardwareManager;
 
     @Override
@@ -55,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
                 setAudioView();
             } else if (isServiceRunning(videoRecording.class)) {
                 setVideoView();
+            } else if (isServiceRunning(photoService.class)) {
+                setPhotoView();
             } else {
                 showMainlayout();
             }
@@ -153,6 +154,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             }
         });
+        findViewById(R.id.btnPhoto).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startService(new Intent(getApplicationContext(), photoService.class));
+                onBackPressed();
+                setPhotoView();
+            }
+        });
     }
 
 
@@ -181,14 +190,32 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setPhotoView(){
+        showPhotolayout();
+        findViewById(R.id.btnStopservicecamara).setOnClickListener(view -> {
+            Intent serviceIntent = new Intent(this, photoService.class);
+            stopService(serviceIntent);
+            showMainlayout();
+        });
+    }
+
+    private void showPhotolayout(){
+        goneVisibilit(R.id.camaraLayout);
+        goneVisibilit(R.id.mainLayout);
+        goneVisibilit(R.id.audioLayout);
+        viewVisibility(R.id.photoLayout);
+    }
+
     private void showAudiolayout(){
         goneVisibilit(R.id.camaraLayout);
         goneVisibilit(R.id.mainLayout);
+        goneVisibilit(R.id.photoLayout);
         viewVisibility(R.id.audioLayout);
     }
 
     private void showMainlayout(){
         setMemory();
+        goneVisibilit(R.id.photoLayout);
         goneVisibilit(R.id.camaraLayout);
         goneVisibilit(R.id.audioLayout);
         viewVisibility(R.id.mainLayout);
@@ -196,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showVideolayout(){
+        goneVisibilit(R.id.photoLayout);
         goneVisibilit(R.id.mainLayout);
         goneVisibilit(R.id.audioLayout);
         viewVisibility(R.id.camaraLayout);

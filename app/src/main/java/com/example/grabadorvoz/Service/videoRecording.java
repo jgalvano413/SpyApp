@@ -52,17 +52,21 @@ public class videoRecording extends Service {
             cacheDir.mkdirs();
         }
         fileName = new File(cacheDir, "videorecord_" + getDate() + ".mp4").getAbsolutePath();
-        showToast(this, this.getString(R.string.serviceStart),true);
+        //showToast(this, this.getString(R.string.serviceStart),true);
         data.saveBoolean(IS_SERVICE,true);
     }
 
     @SuppressLint("ForegroundServiceType")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        createNotificationChannel();
-        if (data.getBooleanNotidication(NOTIFICATION)) startForeground(1, createSilentNotification());
-        else { startForeground(1, createSilentNotification2());}
-        // Obtén el SurfaceHolder de la vista en la que quieres mostrar la vista previa del video
+        manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (data.getBooleanNotidication(NOTIFICATION)) {
+            createNotificationChannel();
+            startForeground(1, createSilentNotification());
+        }else {
+            createNotificationChannelSilets();
+            startForeground(1, createSilentNotification2());
+        }
         surfaceHolder = (Surface) intent.getExtras().get("surface");
         startRecording();
         return START_STICKY;
@@ -76,7 +80,7 @@ public class videoRecording extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        showToast(this, this.getString(R.string.serviceStop),true);
+        //showToast(this, this.getString(R.string.serviceStop),true);
         stopRecording();
         manager.cancel(1);
         data.saveBoolean(IS_SERVICE,false);
@@ -131,7 +135,7 @@ public class videoRecording extends Service {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.baseline_camera_alt_24)
+                .setSmallIcon(R.drawable.baseline_videocam_24)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setOngoing(true)
@@ -148,16 +152,28 @@ public class videoRecording extends Service {
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setSilent(true);
             builder.setContentTitle("")
-                    .setSmallIcon(R.drawable.logo_app)
                     .setContentText("");
 
         return builder.build();
     }
 
+    private void createNotificationChannelSilets(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Servicio de Notificador",
+                    NotificationManager.IMPORTANCE_MIN
+            );
+            channel.enableLights(false);
+            channel.enableVibration(false);
+            channel.setSound(null, null);
+            manager.createNotificationChannel(channel);
+        }
+    }
+
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Servicio de Notificador", NotificationManager.IMPORTANCE_HIGH);
-            manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel);
         }
     }

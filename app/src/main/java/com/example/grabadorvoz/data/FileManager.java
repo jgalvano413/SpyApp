@@ -1,5 +1,7 @@
 package com.example.grabadorvoz.data;
 
+import static com.example.pruebaremoto.widgets.toast.ToastKt.showToast;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -35,16 +37,20 @@ public class FileManager {
         try {
             Files.copy(file.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             file.delete();
-            Toast.makeText(context, "Archivo guardado en la galería", Toast.LENGTH_SHORT).show();
             Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             scanIntent.setData(Uri.fromFile(targetFile));
             context.sendBroadcast(scanIntent);
+            showToast(context, getPath(), true);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(context, "Error al guardar el archivo", Toast.LENGTH_SHORT).show();
+            showToast(context, context.getString(R.string.savefileError), true);
         }
         return false;
+    }
+
+    private String getPath(){
+        return context.getString(R.string.savefile) + " \n" + Environment.DIRECTORY_DOWNLOADS.toString() + "/" +context.getString(R.string.app_name);
     }
 
 

@@ -5,10 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    tools:context=".activity.SplashActivity">
+    android:background="#cfd6d6">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageView"
         android:layout_width="200dp"
         android:layout_height="200dp"
@@ -25,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
         android:textSize="15dp"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:text="@string/POWEREDBY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +36,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginBottom="55dp"
-        android:indeterminateTint="#FFFFFF"
+        android:indeterminateTint="@color/black"
         android:indeterminateTintMode="src_atop"
         app:layout_constraintBottom_toTopOf="@+id/tiitle"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +51,7 @@
         android:layout_marginBottom="35dp"
         android:gravity="center"
         android:textSize="12dp"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:text="Solicitando Permisos....."
         app:layout_constraintBottom_toTopOf="@+id/progressBar3"
         app:layout_constraintEnd_toEndOf="parent"

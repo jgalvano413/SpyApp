@@ -41,6 +41,18 @@ class PermissionsManager(private val activity: Activity) {
             ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
         }
 
+        val storageManager = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ).filter {
+                ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
+            }
+        } else {
+            emptyList()
+        }
+
+
         val bluetoothPermissionsNeeded = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             arrayOf(
                 Manifest.permission.POST_NOTIFICATIONS
@@ -51,10 +63,10 @@ class PermissionsManager(private val activity: Activity) {
             emptyList()
         }
 
-        if (permissionsNeeded.isNotEmpty() || bluetoothPermissionsNeeded.isNotEmpty()) {
+        if (permissionsNeeded.isNotEmpty() || bluetoothPermissionsNeeded.isNotEmpty() || storageManager.isNotEmpty()) {
             ActivityCompat.requestPermissions(
                 activity,
-                (permissionsNeeded + bluetoothPermissionsNeeded).toTypedArray(),
+                (permissionsNeeded + bluetoothPermissionsNeeded + storageManager).toTypedArray(),
                 PERMISSION_REQUEST_CODE
             )
         }

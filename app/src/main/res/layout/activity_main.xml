@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.widget.ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:visibility="gone"
             android:gravity="center"
             xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -167,6 +169,16 @@
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:layout_marginLeft="95dp"
+                android:layout_marginRight="95dp"
+                android:text="Foto Discreta"
+                app:cornerRadius="25dp"/>
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -276,6 +288,56 @@
                 android:layout_marginRight="85dp"
                 android:text="Stop"
                 app:cornerRadius="25dp"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/photoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="32dp"
+                android:gravity="center"
+                android:fontFamily="@font/titillium_web_black"
+                android:text="@string/photoGraft"/>
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="45dp"
+                android:layout_marginRight="45dp"
+                android:padding="15dp"
+                android:src="@drawable/volumen_picture" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/photoGraftMessage"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnStopservicecamara"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#F20606"
+                android:text="DETENER SERVICIO"
+                android:textColor="@color/white"
+                android:layout_marginRight="55dp"
+                android:layout_marginLeft="55dp"
+                android:textSize="12sp"
+                app:cornerRadius="25dp" />
 
 
         </LinearLayout>

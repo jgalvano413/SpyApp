@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import com.example.grabadorvoz.Service.GrabacionService;
+import com.example.grabadorvoz.Service.photoService;
 import com.example.grabadorvoz.Service.videoRecording;
 
 public class StopServiceReceiver extends BroadcastReceiver {
@@ -17,7 +18,10 @@ public class StopServiceReceiver extends BroadcastReceiver {
         if (isServiceRunning(GrabacionService.class)) {
             Intent serviceIntent = new Intent(context, GrabacionService.class);
             context.stopService(serviceIntent);
-        } else {
+        } else if (isServiceRunning(photoService.class)){
+            Intent serviceIntent = new Intent(context, photoService.class);
+            context.stopService(serviceIntent);
+        }else {
             Intent serviceIntent = new Intent(context, videoRecording.class);
             context.stopService(serviceIntent);
         }

